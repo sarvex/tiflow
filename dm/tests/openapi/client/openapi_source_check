@@ -87,7 +87,7 @@ def update_source1_without_password_success():
             "user": "root",
         }
     }
-    resp = requests.put(url=API_ENDPOINT + "/" + SOURCE1_NAME, json=req)
+    resp = requests.put(url=f"{API_ENDPOINT}/{SOURCE1_NAME}", json=req)
     print("update_source1_without_password_success resp=", resp.json())
     assert resp.status_code == 200
 
@@ -106,7 +106,7 @@ def list_source_success_https(source_count, ssl_ca, ssl_cert, ssl_key):
     assert data["total"] == int(source_count)
 
 def list_source_with_status_success(source_count, status_count):
-    resp = requests.get(url=API_ENDPOINT + "?with_status=true")
+    resp = requests.get(url=f"{API_ENDPOINT}?with_status=true")
     assert resp.status_code == 200
     data = resp.json()
     print("list_source_with_status_success resp=", data)
@@ -130,25 +130,25 @@ def list_source_with_reverse_https(source_count, ssl_ca, ssl_cert, ssl_key):
     assert data["total"] == int(source_count)
 
 def delete_source_success(source_name):
-    resp = requests.delete(url=API_ENDPOINT + "/" + source_name)
+    resp = requests.delete(url=f"{API_ENDPOINT}/{source_name}")
     assert resp.status_code == 204
     print("delete_source_success")
 
 
 def delete_source_with_force_success(source_name):
-    resp = requests.delete(url=API_ENDPOINT + "/" + source_name + "?force=true")
+    resp = requests.delete(url=f"{API_ENDPOINT}/{source_name}?force=true")
     assert resp.status_code == 204
     print("delete_source_with_force_success")
 
 
 def delete_source_failed(source_name):
-    resp = requests.delete(url=API_ENDPOINT + "/" + source_name)
+    resp = requests.delete(url=f"{API_ENDPOINT}/{source_name}")
     print("delete_source_failed msg=", resp.json())
     assert resp.status_code == 400
 
 
 def enable_relay_failed(source_name, worker_name):
-    url = API_ENDPOINT + "/" + source_name + "/relay/enable"
+    url = f"{API_ENDPOINT}/{source_name}/relay/enable"
     req = {
         "worker_name_list": [worker_name],
     }
@@ -158,7 +158,7 @@ def enable_relay_failed(source_name, worker_name):
 
 
 def enable_relay_success(source_name, worker_name):
-    url = API_ENDPOINT + "/" + source_name + "/relay/enable"
+    url = f"{API_ENDPOINT}/{source_name}/relay/enable"
     req = {
         "purge": {"interval": 3600, "expires": 0, "remain_space": 15},
     }
@@ -167,7 +167,7 @@ def enable_relay_success(source_name, worker_name):
 
 
 def enable_relay_success_with_two_worker(source_name, worker1_name, worker2_name):
-    url = API_ENDPOINT + "/" + source_name + "/relay/enable"
+    url = f"{API_ENDPOINT}/{source_name}/relay/enable"
     req = {
         "worker_name_list": [worker1_name, worker2_name],
         "purge": {"interval": 3600, "expires": 0, "remain_space": 15},
@@ -177,7 +177,7 @@ def enable_relay_success_with_two_worker(source_name, worker1_name, worker2_name
 
 
 def disable_relay_failed(source_name, worker_name):
-    url = API_ENDPOINT + "/" + source_name + "/relay/disable"
+    url = f"{API_ENDPOINT}/{source_name}/relay/disable"
     req = {
         "worker_name_list": [worker_name],
     }
@@ -187,7 +187,7 @@ def disable_relay_failed(source_name, worker_name):
 
 
 def disable_relay_success(source_name, worker_name):
-    url = API_ENDPOINT + "/" + source_name + "/relay/disable"
+    url = f"{API_ENDPOINT}/{source_name}/relay/disable"
     req = {
         "worker_name_list": [worker_name],
     }
@@ -196,7 +196,7 @@ def disable_relay_success(source_name, worker_name):
 
 
 def purge_relay_success(source_name, relay_binlog_name, relay_dir=""):
-    url = API_ENDPOINT + "/" + source_name + "/relay/purge"
+    url = f"{API_ENDPOINT}/{source_name}/relay/purge"
     req = {
         "relay_binlog_name": relay_binlog_name,
         "relay_dir": relay_dir,
@@ -208,14 +208,14 @@ def purge_relay_success(source_name, relay_binlog_name, relay_dir=""):
 
 
 def get_source_status_failed(source_name):
-    url = API_ENDPOINT + "/" + source_name + "/status"
+    url = f"{API_ENDPOINT}/{source_name}/status"
     resp = requests.get(url=url)
     print("get_source_status_failed resp=", resp.json())
     assert resp.status_code == 400
 
 
 def get_source_status_success(source_name, status_count=1):
-    url = API_ENDPOINT + "/" + source_name + "/status"
+    url = f"{API_ENDPOINT}/{source_name}/status"
     resp = requests.get(url=url)
     assert resp.status_code == 200
     print("get_source_status_success resp=", resp.json())
@@ -223,7 +223,7 @@ def get_source_status_success(source_name, status_count=1):
 
 
 def get_source_status_success_with_relay(source_name, source_idx=0):
-    url = API_ENDPOINT + "/" + source_name + "/status"
+    url = f"{API_ENDPOINT}/{source_name}/status"
     resp = requests.get(url=url)
     assert resp.status_code == 200
     res = resp.json()
@@ -232,7 +232,7 @@ def get_source_status_success_with_relay(source_name, source_idx=0):
 
 
 def get_source_status_success_no_relay(source_name, source_idx=0):
-    url = API_ENDPOINT + "/" + source_name + "/status"
+    url = f"{API_ENDPOINT}/{source_name}/status"
     resp = requests.get(url=url)
     assert resp.status_code == 200
     res = resp.json()
@@ -241,7 +241,7 @@ def get_source_status_success_no_relay(source_name, source_idx=0):
 
 
 def transfer_source_success(source_name, worker_name):
-    url = API_ENDPOINT + "/" + source_name + "/transfer"
+    url = f"{API_ENDPOINT}/{source_name}/transfer"
     req = {
         "worker_name": worker_name,
     }
@@ -250,14 +250,14 @@ def transfer_source_success(source_name, worker_name):
 
 
 def get_source_schemas_and_tables_success(source_name, schema_name="", table_name=""):
-    schema_url = API_ENDPOINT + "/" + source_name + "/schemas"
+    schema_url = f"{API_ENDPOINT}/{source_name}/schemas"
     schema_resp = requests.get(url=schema_url)
     assert schema_resp.status_code == 200
     print("get_source_schemas_and_tables_success schema_resp=", schema_resp.json())
     schema_list = schema_resp.json()
     assert schema_name in schema_list
 
-    table_url = API_ENDPOINT + "/" + source_name + "/schemas/openapi"
+    table_url = f"{API_ENDPOINT}/{source_name}/schemas/openapi"
     table_resp = requests.get(url=table_url)
     print("get_source_schemas_and_tables_success table_resp=", table_resp.json())
     table_list = table_resp.json()

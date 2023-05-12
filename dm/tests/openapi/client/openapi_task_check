@@ -270,7 +270,7 @@ def create_shard_task_success():
 
 
 def start_task_success(task_name, source_name):
-    url = API_ENDPOINT + "/" + task_name + "/start"
+    url = f"{API_ENDPOINT}/{task_name}/start"
     req = {}
     if source_name != "":
         req = {"source_name_list": [source_name], "remove_meta": True}
@@ -280,7 +280,7 @@ def start_task_success(task_name, source_name):
     assert resp.status_code == 200
 
 def start_task_failed(task_name, source_name, check_result):
-    url = API_ENDPOINT + "/" + task_name + "/start"
+    url = f"{API_ENDPOINT}/{task_name}/start"
     req = {}
     if source_name != "":
         req = {"source_name_list": [source_name], "remove_meta": True}
@@ -292,7 +292,7 @@ def start_task_failed(task_name, source_name, check_result):
     assert check_result in resp.json()["error_msg"]
 
 def start_task_with_condition(task_name, start_time, duration, is_success, check_result):
-    url = API_ENDPOINT + "/" + task_name + "/start"
+    url = f"{API_ENDPOINT}/{task_name}/start"
     req = {"start_time": start_time, "safe_mode_time_duration": duration}
     resp = requests.post(url=url, json=req)
     if is_success == "success":
@@ -308,7 +308,7 @@ def start_task_with_condition(task_name, start_time, duration, is_success, check
         assert check_result in resp.json()["error_msg"]
 
 def stop_task_with_condition(task_name, source_name, timeout_duration):
-    url = API_ENDPOINT + "/" + task_name + "/stop"
+    url = f"{API_ENDPOINT}/{task_name}/stop"
     req = {"timeout_duration": timeout_duration}
     if source_name != "":
         req = {"source_name_list": [source_name], "timeout_duration": timeout_duration}
@@ -318,35 +318,33 @@ def stop_task_with_condition(task_name, source_name, timeout_duration):
     assert resp.status_code == 200
 
 def stop_task_success(task_name, source_name):
-    url = API_ENDPOINT + "/" + task_name + "/stop"
-    req = {}
-    if source_name != "":
-        req = {"source_name_list": [source_name]}
+    url = f"{API_ENDPOINT}/{task_name}/stop"
+    req = {"source_name_list": [source_name]} if source_name != "" else {}
     resp = requests.post(url=url, json=req)
     if resp.status_code != 200:
         print("stop_task_failed resp=", resp.json())
     assert resp.status_code == 200
 
 def delete_task_success(task_name):
-    resp = requests.delete(url=API_ENDPOINT + "/" + task_name)
+    resp = requests.delete(url=f"{API_ENDPOINT}/{task_name}")
     assert resp.status_code == 204
     print("delete_task_success")
 
 
 def delete_task_failed(task_name):
-    resp = requests.delete(url=API_ENDPOINT + "/" + task_name)
+    resp = requests.delete(url=f"{API_ENDPOINT}/{task_name}")
     print("delete_task_failed resp=", resp.json())
     assert resp.status_code == 400
 
 
 def delete_task_with_force_success(task_name):
-    resp = requests.delete(url=API_ENDPOINT + "/" + task_name + "?force=true")
+    resp = requests.delete(url=f"{API_ENDPOINT}/{task_name}?force=true")
     assert resp.status_code == 204
     print("delete_task_success")
 
 
 def get_task_status_failed(task_name):
-    url = API_ENDPOINT + "/" + task_name + "/status"
+    url = f"{API_ENDPOINT}/{task_name}/status"
     resp = requests.get(url=url)
     print("get_task_status_failed resp=", resp.json())
     assert resp.status_code == 400
@@ -355,7 +353,7 @@ def get_task_status_failed(task_name):
 def get_illegal_char_task_status_failed():
     # task name contains illegal char but api server can handle it.
     # return 400 is because of the task is not started.
-    url = API_ENDPOINT + "/" + ILLEGAL_CHAR_TASK_NAME + "/status"
+    url = f"{API_ENDPOINT}/{ILLEGAL_CHAR_TASK_NAME}/status"
     resp = requests.get(url=url)
     print("get_illegal_char_task_status_failed resp=", resp.json())
     assert resp.status_code == 400
@@ -367,7 +365,7 @@ def get_illegal_char_task_status_failed():
 
 
 def get_task_status_success(task_name, total):
-    url = API_ENDPOINT + "/" + task_name + "/status"
+    url = f"{API_ENDPOINT}/{task_name}/status"
     resp = requests.get(url=url)
     data = resp.json()
     assert resp.status_code == 200
@@ -376,7 +374,7 @@ def get_task_status_success(task_name, total):
 
 
 def get_task_status_success_but_worker_meet_error(task_name, total):
-    url = API_ENDPOINT + "/" + task_name + "/status"
+    url = f"{API_ENDPOINT}/{task_name}/status"
     resp = requests.get(url=url)
     data = resp.json()
     assert resp.status_code == 200
@@ -397,7 +395,7 @@ def get_task_list(task_count):
 
 
 def get_task_list_with_status(task_count, task_name, status_count):
-    url = API_ENDPOINT + "?with_status=true"
+    url = f"{API_ENDPOINT}?with_status=true"
     resp = requests.get(url=url)
     data = resp.json()
     assert resp.status_code == 200
@@ -413,7 +411,7 @@ def get_task_list_with_status(task_count, task_name, status_count):
 
 
 def operate_schema_and_table_success(task_name, source_name, schema_name, table_name):
-    schema_url = API_ENDPOINT + "/" + task_name + "/sources/" + source_name + "/schemas"
+    schema_url = f"{API_ENDPOINT}/{task_name}/sources/{source_name}/schemas"
     schema_resp = requests.get(url=schema_url)
     assert schema_resp.status_code == 200
     print("get_task_schema_success schema resp=", schema_resp.json())
@@ -421,14 +419,14 @@ def operate_schema_and_table_success(task_name, source_name, schema_name, table_
 
     schema_list = schema_resp.json()
     assert schema_name in schema_list
-    table_url = schema_url + "/" + schema_name
+    table_url = f"{schema_url}/{schema_name}"
     table_resp = requests.get(url=table_url)
     assert table_resp.status_code == 200
     print("get_task_schema_success table resp=", table_resp.json())
     table_list = table_resp.json()
     assert table_name in table_list
 
-    single_table_url = table_url + "/" + table_name
+    single_table_url = f"{table_url}/{table_name}"
     create_table_resp = requests.get(url=single_table_url)
     assert create_table_resp.status_code == 200
     create_table = create_table_resp.json()
@@ -451,7 +449,7 @@ def operate_schema_and_table_success(task_name, source_name, schema_name, table_
 
 
 def create_task_template_success(task_name, target_table_name=""):
-    url = API_ENDPOINT + "/templates"
+    url = f"{API_ENDPOINT}/templates"
     task = {
         "name": task_name,
         "task_mode": "all",
@@ -496,7 +494,7 @@ def create_task_template_success(task_name, target_table_name=""):
 
 
 def create_task_template_failed():
-    url = API_ENDPOINT + "/templates"
+    url = f"{API_ENDPOINT}/templates"
     task = {
         "name": "test",
         "task_mode": "all",
@@ -541,7 +539,7 @@ def create_task_template_failed():
 
 
 def list_task_template(count):
-    url = API_ENDPOINT + "/templates"
+    url = f"{API_ENDPOINT}/templates"
     resp = requests.get(url=url)
     data = resp.json()
     assert resp.status_code == 200
@@ -550,7 +548,7 @@ def list_task_template(count):
 
 
 def import_task_template(success_count, failed_count):
-    url = API_ENDPOINT + "/templates/import"
+    url = f"{API_ENDPOINT}/templates/import"
     resp = requests.post(url=url)
     data = resp.json()
     print("import_task_template resp=", data)
@@ -560,7 +558,7 @@ def import_task_template(success_count, failed_count):
 
 
 def get_task_template(name):
-    url = API_ENDPOINT + "/templates/" + name
+    url = f"{API_ENDPOINT}/templates/{name}"
     resp = requests.get(url=url)
     data = resp.json()
     assert resp.status_code == 200
@@ -569,7 +567,7 @@ def get_task_template(name):
 
 
 def update_task_template_success(name, task_mode):
-    url = API_ENDPOINT + "/templates/" + name
+    url = f"{API_ENDPOINT}/templates/{name}"
 
     # get task template first
     task = requests.get(url=url).json()
@@ -583,14 +581,14 @@ def update_task_template_success(name, task_mode):
 
 
 def delete_task_template(name):
-    url = API_ENDPOINT + "/templates/" + name
+    url = f"{API_ENDPOINT}/templates/{name}"
     resp = requests.delete(url=url)
     assert resp.status_code == 204
     print("delete_task_template")
 
 
 def check_noshard_task_dump_status_success(task_name, total):
-    url = API_ENDPOINT + "/" + task_name + "/status"
+    url = f"{API_ENDPOINT}/{task_name}/status"
     resp = requests.get(url=url)
     data = resp.json()
     assert resp.status_code == 200
@@ -599,15 +597,15 @@ def check_noshard_task_dump_status_success(task_name, total):
 
 
 def do_complex_operations(task_name):
-    source1_url = "http://127.0.0.1:8361/api/v1/sources/" + SOURCE1_NAME
-    task_url = "http://127.0.0.1:8361/api/v1/tasks/" + task_name
-    enable_source_url = source1_url + "/enable"
-    disable_source_url = source1_url + "/disable"
+    source1_url = f"http://127.0.0.1:8361/api/v1/sources/{SOURCE1_NAME}"
+    task_url = f"http://127.0.0.1:8361/api/v1/tasks/{task_name}"
+    enable_source_url = f"{source1_url}/enable"
+    disable_source_url = f"{source1_url}/disable"
 
-    stop_url = task_url + "/stop"
-    start_url = task_url + "/start"
-    status_url = task_url + "/status"
-    migrate_targets_url = task_url + "/sources/" + SOURCE1_NAME + "/migrate_targets"
+    stop_url = f"{task_url}/stop"
+    start_url = f"{task_url}/start"
+    status_url = f"{task_url}/status"
+    migrate_targets_url = f"{task_url}/sources/{SOURCE1_NAME}/migrate_targets"
 
     # get source
     source = requests.get(source1_url).json()
@@ -678,12 +676,11 @@ def do_complex_operations(task_name):
     for s in status["data"]:
         assert s["stage"] == "Running"
 
-    # list migrate targets
-    source1_migrate_rules = []
-    for rule in task["table_migrate_rule"]:
-        if rule["source"]["source_name"] == SOURCE1_NAME:
-            source1_migrate_rules.append(rule)
-
+    source1_migrate_rules = [
+        rule
+        for rule in task["table_migrate_rule"]
+        if rule["source"]["source_name"] == SOURCE1_NAME
+    ]
     resp = requests.get(migrate_targets_url)
     if resp.status_code != 200:
         print("list migrate targets failed", resp.json())

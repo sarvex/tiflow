@@ -8,7 +8,7 @@ API_ENDPOINT = "http://127.0.0.1:8261/api/v1/cluster"
 
 
 def list_master_success(master_count):
-    url = API_ENDPOINT + "/masters"
+    url = f"{API_ENDPOINT}/masters"
     resp = requests.get(url=url)
     assert resp.status_code == 200
     data = resp.json()
@@ -21,7 +21,7 @@ def delete_master_with_retry_success(master_name):
     offline dm-master node is done by offline etcd member but operate etcd cluster may met `etcdserver: unhealthy cluster`
     so add some retry here
     """
-    url = API_ENDPOINT + "/masters/" + master_name
+    url = f"{API_ENDPOINT}/masters/{master_name}"
     for i in range(0, 30):
         resp = requests.delete(url=url)
         if resp.status_code != 204:
@@ -35,7 +35,7 @@ def delete_master_with_retry_success(master_name):
 
 
 def list_worker_success(worker_count):
-    url = API_ENDPOINT + "/workers"
+    url = f"{API_ENDPOINT}/workers"
     resp = requests.get(url=url)
     assert resp.status_code == 200
     data = resp.json()
@@ -44,7 +44,7 @@ def list_worker_success(worker_count):
 
 
 def delete_worker_failed(worker_name):
-    url = API_ENDPOINT + "/workers/" + worker_name
+    url = f"{API_ENDPOINT}/workers/{worker_name}"
     resp = requests.delete(url=url)
     assert resp.status_code == 400
     print("delete_worker_failed resp=", resp.json())
@@ -55,7 +55,7 @@ def delete_worker_with_retry_success(worker_name):
     offline dm-worker node is done by offline etcd member but operate etcd cluster may met `etcdserver: unhealthy cluster`
     so add some retry here
     """
-    url = API_ENDPOINT + "/workers/" + worker_name
+    url = f"{API_ENDPOINT}/workers/{worker_name}"
     for i in range(0, 30):
         resp = requests.delete(url=url)
         if resp.status_code != 204:
